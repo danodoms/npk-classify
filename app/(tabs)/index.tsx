@@ -1,6 +1,7 @@
 import { ExternalLink } from '@tamagui/lucide-icons'
-import { Anchor, H2, Paragraph, XStack, YStack } from 'tamagui'
+import { Anchor, H2, Paragraph, XStack, YStack, Text } from 'tamagui'
 import { ToastControl } from 'app/CurrentToast'
+import { Link } from "expo-router";
 
 export default function TabOneScreen() {
   return (
@@ -42,6 +43,10 @@ export default function TabOneScreen() {
         <Paragraph fos="$5" ta="center">
           to configure your themes and tokens.
         </Paragraph>
+
+        {/* <Link href="/home/classify" className="text-center">
+          <Text>Start Classification</Text>
+        </Link> */}
       </XStack>
     </YStack>
   )

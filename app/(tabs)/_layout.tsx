@@ -1,6 +1,6 @@
 import { Link, Tabs } from 'expo-router'
 import { Button, useTheme } from 'tamagui'
-import { Home, History } from '@tamagui/lucide-icons'
+import { Home, History, Scan } from '@tamagui/lucide-icons'
 
 export default function TabLayout() {
   const theme = useTheme()
@@ -25,8 +25,19 @@ export default function TabLayout() {
           ),
         }}
       />
+
+
       <Tabs.Screen
-        name="two"
+        name="Classify"
+        options={{
+          title: 'Detect',
+          tabBarIcon: ({ color }) => <Scan color={color} />,
+        }}
+      />
+
+
+      <Tabs.Screen
+        name="Results"
         options={{
           title: 'Results',
           tabBarIcon: ({ color }) => <History color={color} />,
