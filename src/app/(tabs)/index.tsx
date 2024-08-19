@@ -1,6 +1,6 @@
 import { ExternalLink } from '@tamagui/lucide-icons'
 import { Anchor, H2, Paragraph, XStack, YStack, Text } from 'tamagui'
-import { ToastControl } from 'app/CurrentToast'
+import { ToastControl } from 'src/app/CurrentToast'
 import { Link } from "expo-router";
 
 export default function TabOneScreen() {
