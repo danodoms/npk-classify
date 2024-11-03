@@ -8,7 +8,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: theme.red10.val,
+        tabBarActiveTintColor: theme.accentColor.val,
       }}
     >
       <Tabs.Screen
@@ -18,9 +18,9 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <Home color={color} />,
           headerRight: () => (
             <Link href="/modal" asChild>
-              <Button mr="$4" bg="$purple8" color="$purple12">
+              {/* <Button mr="$4" bg="$purple8" color="$purple12">
                 Hello!
-              </Button>
+              </Button> */}
             </Link>
           ),
         }}

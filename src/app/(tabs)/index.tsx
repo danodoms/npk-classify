@@ -1,16 +1,27 @@
-import { ExternalLink } from '@tamagui/lucide-icons'
-import { Anchor, H2, Paragraph, XStack, YStack, Text } from 'tamagui'
+import { ExternalLink, Leaf } from '@tamagui/lucide-icons'
+import { Anchor, H2, Paragraph, XStack, YStack, Text, Button, Stack, SizableText } from 'tamagui'
 import { ToastControl } from 'src/app/CurrentToast'
 import { Link } from "expo-router";
 
 export default function TabOneScreen() {
   return (
-    <YStack f={1} ai="center" gap="$8" px="$10" pt="$5">
-      <H2>Ricemap</H2>
+    <YStack f={1} ai="center" gap="$4" p="$4" display="flex" borderColor="white" borderWidth={0}>
 
-      <ToastControl />
+      <Stack borderColor="white" borderWidth={1} backgroundColor="$green11Light" p="$4" borderRadius="$4">
+        <H2 textAlign='left' >XtraRice AI</H2>
+        <SizableText textAlign='left' size="$2">Classify Rice NPK deficiencies with your camera!</SizableText>
+      </Stack>
 
-      <XStack ai="center" jc="center" fw="wrap" gap="$1.5" pos="absolute" b="$8">
+
+
+      <Link href="/Classify" className="text-center">
+        <Button variant='outlined' iconAfter={Leaf}>Classify</Button>
+      </Link>
+
+
+      {/* <ToastControl /> */}
+
+      {/* <XStack ai="center" jc="center" fw="wrap" gap="$1.5" pos="absolute" b="$8">
         <Paragraph fos="$5">Add</Paragraph>
 
         <Paragraph fos="$5" px="$2" py="$1" col="$blue10" bg="$blue5" br="$3">
@@ -44,10 +55,10 @@ export default function TabOneScreen() {
           to configure your themes and tokens.
         </Paragraph>
 
-        {/* <Link href="/home/classify" className="text-center">
-          <Text>Start Classification</Text>
-        </Link> */}
-      </XStack>
-    </YStack>
+
+      </XStack> */}
+
+
+    </YStack >
   )
 }

@@ -1,6 +1,6 @@
 import { ExternalLink } from '@tamagui/lucide-icons'
 import { Anchor, H2, Paragraph, XStack, YStack, SizableText, Button } from 'tamagui'
-import { ToastControl } from '../../app/CurrentToast'
+import { ToastControl } from '../CurrentToast'
 import { Camera, CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useState } from 'react';
 // import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -34,7 +34,6 @@ export default function ClassificationScreen() {
         // <YStack f={1} ai="center" gap="$8" px="$10" pt="$5">
         //     <XStack ai="center" jc="center" fw="wrap" gap="$1.5" pos="absolute" b="$8">
         //         <Paragraph>
-
         //         </Paragraph>
         //     </XStack>
         // </YStack>
