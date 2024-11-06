@@ -1,22 +1,23 @@
 import { ExternalLink, Leaf } from '@tamagui/lucide-icons'
-import { Anchor, H2, Paragraph, XStack, YStack, Text, Button, Stack, SizableText } from 'tamagui'
+import { Anchor, H2, H1, Paragraph, XStack, YStack, Text, Button, Stack, SizableText } from 'tamagui'
 import { ToastControl } from 'src/app/CurrentToast'
 import { Link } from "expo-router";
 
 export default function TabOneScreen() {
   return (
-    <YStack f={1} ai="center" gap="$4" p="$4" display="flex" borderColor="white" borderWidth={0}>
+    <YStack f={1} ai="center" gap="$4" p="$4" borderColor="white" borderWidth={0}>
 
-      <Stack borderColor="white" borderWidth={1} backgroundColor="$green11Light" p="$4" borderRadius="$4">
-        <H2 textAlign='left' >XtraRice AI</H2>
+      <Stack borderColor="white" borderWidth={0} borderRadius="$4" width="100%" flex={1} backgroundColor='$accentBackground' padding="$4" justifyContent="flex-end">
+        <H2 textAlign='left'>XtraRice</H2>
         <SizableText textAlign='left' size="$2">Classify Rice NPK deficiencies with your camera!</SizableText>
       </Stack>
 
+      <Stack borderColor="white" borderWidth={0} width="100%" alignItems='center' flex={1} justifyContent='center'>
+        <Link href="/Classify" className="text-center" >
+          <Button backgroundColor="$accentBackground" iconAfter={Leaf} size="$6">Classify</Button>
+        </Link>
+      </Stack>
 
-
-      <Link href="/Classify" className="text-center">
-        <Button variant='outlined' iconAfter={Leaf}>Classify</Button>
-      </Link>
 
 
       {/* <ToastControl /> */}

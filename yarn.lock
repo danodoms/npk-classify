@@ -2002,6 +2002,43 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@powersync/common@npm:1.20.1":
+  version: 1.20.1
+  resolution: "@powersync/common@npm:1.20.1"
+  dependencies:
+    js-logger: "npm:^1.6.1"
+  checksum: 24321969f99b05a00bfd4f170658de256c9eaea1e42f3a3e4a5f5badefccaa6255e8fea97cd63cf761397a24ae895edc6cb2f4b9ddd1c95a49df681a6bbb984b
+  languageName: node
+  linkType: hard
+
+"@powersync/react-native@npm:^1.14.3":
+  version: 1.14.3
+  resolution: "@powersync/react-native@npm:1.14.3"
+  dependencies:
+    "@powersync/common": "npm:1.20.1"
+    "@powersync/react": "npm:1.5.0"
+  peerDependencies:
+    "@journeyapps/react-native-quick-sqlite": ^2.0.0
+    "@powersync/common": ^1.20.1
+    react: "*"
+    react-native: "*"
+  peerDependenciesMeta:
+    "@journeyapps/react-native-quick-sqlite":
+      optional: true
+  checksum: 8323267c1a1dde113bbdfb96be7b8378670be85ac3646a4e9d9434743f2e1d8cb3888e59a2c628c0e134420f9ce80bb5b6afa4f18874c494370a723dbc11ced4
+  languageName: node
+  linkType: hard
+
+"@powersync/react@npm:1.5.0":
+  version: 1.5.0
+  resolution: "@powersync/react@npm:1.5.0"
+  peerDependencies:
+    "@powersync/common": ^1.19.0
+    react: "*"
+  checksum: c9e35c455a870775a3156de53d72f96e7bb1df7cef9d3fa2e720619f7069cc127cdd9ee8e176525f811742685fd1eed0fc80fa8d66e54ca07d695a84a1fb6294
+  languageName: node
+  linkType: hard
+
 "@radix-ui/react-compose-refs@npm:1.0.0":
   version: 1.0.0
   resolution: "@radix-ui/react-compose-refs@npm:1.0.0"
@@ -8249,6 +8286,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"js-logger@npm:^1.6.1":
+  version: 1.6.1
+  resolution: "js-logger@npm:1.6.1"
+  checksum: 2d46604c64fa0564014349c2bb9cc4e95c50fd9a37e7e7b8b87176da6333b6f8bd17a2368a83ebdb4e336fa0ce252682d1adb08f2c7eb993272e1c99ced01d09
+  languageName: node
+  linkType: hard
+
 "js-tokens@npm:^3.0.0 || ^4.0.0, js-tokens@npm:^4.0.0":
   version: 4.0.0
   resolution: "js-tokens@npm:4.0.0"
@@ -10861,6 +10905,7 @@ __metadata:
     "@babel/core": "npm:^7.24.6"
     "@expo/metro-config": "npm:~0.18.4"
     "@expo/metro-runtime": "npm:~3.2.1"
+    "@powersync/react-native": "npm:^1.14.3"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
     "@react-navigation/native": "npm:^6.1.17"
     "@tamagui/babel-plugin": "npm:^1.101.0"
