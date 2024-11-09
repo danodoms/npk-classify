@@ -6,6 +6,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font'
 import { SplashScreen, Stack } from 'expo-router'
 import { Provider } from './Provider'
+import '@azure/core-asynciterator-polyfill';
 
 export {
   // Catch any errors thrown by the Layout component.
