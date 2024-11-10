@@ -7,6 +7,8 @@ import { useFonts } from 'expo-font'
 import { SplashScreen, Stack } from 'expo-router'
 import { Provider } from './Provider'
 import '@azure/core-asynciterator-polyfill';
+import { PowerSyncProvider } from 'src/powersync/PowerSyncProvider'
+import { system } from 'src/powersync/System'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -44,28 +46,35 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const colorScheme = useColorScheme()
 
+
+  useEffect(() => {
+    system.init();
+  }, []);
+
   return (
     <Provider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen
-            name="(tabs)"
-            options={{
-              headerShown: false,
-            }}
-          />
+        <PowerSyncProvider>
+          <Stack>
+            <Stack.Screen
+              name="(tabs)"
+              options={{
+                headerShown: false,
+              }}
+            />
 
-          <Stack.Screen
-            name="modal"
-            options={{
-              title: 'Tamagui + Expo',
-              presentation: 'modal',
-              animation: 'slide_from_right',
-              gestureEnabled: true,
-              gestureDirection: 'horizontal',
-            }}
-          />
-        </Stack>
+            <Stack.Screen
+              name="modal"
+              options={{
+                title: 'Tamagui + Expo',
+                presentation: 'modal',
+                animation: 'slide_from_right',
+                gestureEnabled: true,
+                gestureDirection: 'horizontal',
+              }}
+            />
+          </Stack>
+        </PowerSyncProvider>
       </ThemeProvider>
     </Provider>
   )

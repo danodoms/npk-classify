@@ -1,6 +1,8 @@
 import { column, Schema, Table } from "@powersync/react-native";
 // OR: import { column, Schema, Table } from '@powersync/react-native';
 
+export const RESULTS_TABLE = "results";
+
 const results = new Table(
   {
     // id column (text) is automatically included
