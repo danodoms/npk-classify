@@ -1,5 +1,5 @@
 import { ExternalLink, Leaf } from '@tamagui/lucide-icons'
-import { Anchor, H2, H1, Paragraph, XStack, YStack, Text, Button, Stack, SizableText, ListItem } from 'tamagui'
+import { Anchor, H2, H1, Paragraph, XStack, YStack, Text, Button, Stack, SizableText, ListItem, ScrollView } from 'tamagui'
 import { ToastControl } from 'src/app/CurrentToast'
 import { Link } from "expo-router";
 import * as Crypto from 'expo-crypto'
@@ -44,6 +44,14 @@ export default function TabOneScreen() {
     loadResults();
   };
 
+
+  // Reset the database
+  const resetResults = async () => {
+    await db.deleteFrom(RESULTS_TABLE).execute();
+    loadResults();
+  };
+
+
   // addResult();
   // addResult();
   // addResult();
@@ -60,24 +68,37 @@ export default function TabOneScreen() {
 
       <Stack borderColor="white" borderWidth={0} width="100%" alignItems='center' flex={1} justifyContent='center'>
         <Link href="/Classify" className="text-center" >
-          <Button backgroundColor="$accentBackground" iconAfter={Leaf} size="$6">Classify</Button>
+          <Button backgroundColor="$accentBackground" onPress={addResult} iconAfter={Leaf} size="$6">Classify</Button>
         </Link>
       </Stack>
 
+      {/* Reset Button */}
+      <Button onPress={resetResults} backgroundColor="$dangerBackground" color="white">
+        Reset Database
+      </Button>
+
+      {/* Dynamic Counter */}
+      <SizableText textAlign='center' size="$4" color="$textColor" marginVertical="$2">
+        Total Results: {results.length}
+      </SizableText>
+
 
       {/* Render Results List */}
-      <YStack width="100%" padding="$4">
-        {results.map((result) => (
-          <ListItem key={result.id} padding="$2" backgroundColor="$background">
-            {/* <SizableText>ID: {result.id}</SizableText> */}
-            <SizableText>N {result.n_deficiency}</SizableText>
-            <SizableText>P {result.p_deficiency}</SizableText>
-            <SizableText>K {result.k_deficiency}</SizableText>
-            <SizableText>Healthy: {result.healthy}</SizableText>
-            <SizableText>Timestamp: {result.timestamp}</SizableText>
-          </ListItem>
-        ))}
+      <YStack width="100%" padding="$4" flex={1}>
+        <ScrollView>
+          {results.map((result) => (
+            <ListItem key={result.id} padding="$2" backgroundColor="$background">
+              <SizableText>N: {result.n_deficiency}</SizableText>
+              <SizableText>P: {result.p_deficiency}</SizableText>
+              <SizableText>K: {result.k_deficiency}</SizableText>
+              <SizableText>Healthy: {result.healthy}</SizableText>
+              <SizableText>Timestamp: {result.timestamp}</SizableText>
+            </ListItem>
+          ))}
+        </ScrollView>
       </YStack>
+
+
 
 
 
