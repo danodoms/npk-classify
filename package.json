@@ -27,6 +27,7 @@
     "@tamagui/config": "^1.101.0",
     "@tamagui/lucide-icons": "^1.101.0",
     "@tamagui/toast": "^1.101.0",
+    "@tensorflow/tfjs": "^4.22.0",
     "@tensorflow/tfjs-react-native": "^1.0.0",
     "babel-preset-expo": "^11.0.6",
     "burnt": "^0.12.2",
