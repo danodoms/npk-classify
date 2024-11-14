@@ -20,7 +20,10 @@ module.exports = withTamagui(config, {
 config.resolver.sourceExts.push("mjs");
 
 // Add '.bin' support for assets
-config.resolver.assetExts.push("bin");
+config.resolver.assetExts.push("bin", "tflite");
+
+// Add '.tflite' support for assets
+//config.resolver.assetExts.push(".tflite");
 
 module.exports = config;
 

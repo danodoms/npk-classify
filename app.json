@@ -12,9 +12,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -32,7 +30,14 @@
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      "expo-asset",
+      [
+        "react-native-fast-tflite",
+        {
+          "enableCoreMLDelegate": true
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
