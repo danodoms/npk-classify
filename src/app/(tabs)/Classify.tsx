@@ -1,4 +1,4 @@
-import {Button, SizableText, YStack} from 'tamagui'
+import {Button, H2, SizableText, YStack} from 'tamagui'
 import {useEffect, useRef, useState} from 'react';
 import {Image, StyleSheet} from 'react-native'
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -14,7 +14,8 @@ import {
 import {useResizePlugin} from "vision-camera-resize-plugin"
 import {decodeJpeg} from "@tensorflow/tfjs-react-native";
 import {convertToRGB} from "react-native-image-to-rgb";
-
+import {Worklets} from "react-native-worklets-core";
+import {plantDiseaseClasses} from "../../../assets/model/tflite/plant-disease/plant-disease-classes";
 
 export default function ClassificationScreen() {
 
@@ -27,55 +28,79 @@ export default function ClassificationScreen() {
     const { resize } = useResizePlugin()
 
 
-
-
     const { hasPermission, requestPermission } = useCameraPermission()
     const device = useCameraDevice('back')
 
 
 
+    function softmax(values) {
+        const maxVal = Math.max(...Object.values(values)); // Avoid numerical underflow
+        const expValues = Object.fromEntries(
+            Object.entries(values).map(([key, value]) => [key, Math.exp(value - maxVal)])
+        );
+        const sumExpValues = Object.values(expValues).reduce((sum, value) => sum + value, 0);
+        return Object.fromEntries(
+            Object.entries(expValues).map(([key, value]) => [key, value / sumExpValues])
+        );
+    }
+
+
+    const runClassification = Worklets.createRunOnJS((outputs:{}, applyNormalization=false) => {
+        console.log(outputs);
+
+        const maxKey = Object.keys(outputs).reduce((a, b) =>
+          outputs[a] > outputs[b] ? a : b
+        );
+
+        // Get the highest value
+        const maxValue = outputs[maxKey];
+
+        console.log("Max Key:", maxKey);
+        console.log("Max Value:", maxValue);
+
+        // Get the disease name using the key
+        const diseaseName = plantDiseaseClasses[maxKey];
+
+        // Update classification state
+        setClassification(`${diseaseName} (Score: ${maxValue.toFixed(6)})`); // Optionally include the score
+    })
+
+
     const frameProcessor = useFrameProcessor((frame) => {
         'worklet'
-      /*  console.log(`Frame: ${frame.width}x${frame.height} (${frame.pixelFormat})`)*/
-        if (model == null) return
+        /*console.log(`Frame: ${frame.width}x${frame.height} (${frame.pixelFormat})`)*/
+        if (model == null) return console.log("no model loaded")
 
         'worklet'
-        runAtTargetFps(1, () => {
+        runAtTargetFps(2, () => {
             console.log("I'm running synchronously at 1 FPS!")
   /*          const brightness = detectBrightness(frame)*/
 
             // 1. Resize Frame using vision-camera-resize-plugin
-
             const resized = resize(frame, {
                 scale: {
                     width: 224,
                     height: 224,
                 },
                 pixelFormat: 'rgb',
-                dataType: 'uint8',
+
+                //TAKE NOTE OF THIS, SOMETIMES SOME MODEL NEEDS float32 and some needs uint8
+                dataType: 'float32',
             })
 
             // 2. Run model with given input buffer synchronously
             const outputs = model.runSync([resized])
-           /* console.log("model output:", outputs)*/
+           /* console.log([resized.toString()])*/
 
 
-           /* setClassification(()=>"random")*/
-            /*'worklet';
-            runClassification()*/
-
-
-
+            runClassification(outputs[0])
 
         })
     }, [model])
 
 
-    'worklet'
-    const runClassification = (()=>{
-        'worklet'
-         setClassification(()=>"random")
-    })
+
+
 
 
     // Ensure TensorFlow is ready before classifying
@@ -181,13 +206,7 @@ export default function ClassificationScreen() {
 
     return (
         <YStack flex={1}>
-            {/*<CameraView style={styles.camera} facing={facing} ref={cameraRef}>
-                <YStack>
-                    <Button onPress={toggleCameraFacing}>
-                        <SizableText>Flip Camera</SizableText>
-                    </Button>
-                </YStack>
-            </CameraView>*/}
+
 
             <Camera
                 style={StyleSheet.absoluteFill}
@@ -204,18 +223,31 @@ export default function ClassificationScreen() {
                 </YStack>
             )}
 
+
+            {/* Display Classification Result */}
+            {classification && (
+                <H2 size="$large" fontWeight="bold">
+                    {classification}
+                </H2>
+            )}
+            {classification && (
+                <H2 size="$large" fontWeight="bold">
+                    {classification}
+                </H2>
+            )}
+            {classification && (
+                <H2 size="$large" fontWeight="bold">
+                    {classification}
+                </H2>
+            )}
+
             <YStack style={styles.buttonContainer}>
                 <Button onPress={captureAndClassify} disabled={!isTfReady}>
                     {isTfReady ? <SizableText>Capture and Classify</SizableText> : <SizableText>Waiting for Tensorflow...</SizableText>}
                 </Button>
             </YStack>
 
-            {/* Display Classification Result */}
-            {classification && (
-                <SizableText style={styles.message}>
-                    Classification: {classification}
-                </SizableText>
-            )}
+
         </YStack>
     );
 }
