@@ -1,23 +1,82 @@
-import { ExternalLink } from '@tamagui/lucide-icons'
-import { Anchor, H2, Paragraph, XStack, YStack, SizableText, Button } from 'tamagui'
-import { ToastControl } from '../CurrentToast'
-import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { useState, useRef, useEffect } from 'react';
-import { StyleSheet, Image } from 'react-native'
-import * as tf from '@tensorflow/tfjs';
+import {Button, SizableText, YStack} from 'tamagui'
+import {useEffect, useRef, useState} from 'react';
+import {Image, StyleSheet} from 'react-native'
 import * as ImageManipulator from 'expo-image-manipulator';
-import { Asset } from 'expo-asset';
-import { bundleResourceIO, decodeJpeg } from '@tensorflow/tfjs-react-native';
-import * as FileSystem from 'expo-file-system';
-import { loadTensorflowModel, TensorflowModel } from "react-native-fast-tflite"
+import {SaveFormat} from 'expo-image-manipulator';
+import {loadTensorflowModel, TensorflowModel} from "react-native-fast-tflite"
+import {
+    Camera,
+    runAtTargetFps,
+    useCameraDevice,
+    useCameraPermission,
+    useFrameProcessor
+} from "react-native-vision-camera";
+import {useResizePlugin} from "vision-camera-resize-plugin"
+import {decodeJpeg} from "@tensorflow/tfjs-react-native";
+import {convertToRGB} from "react-native-image-to-rgb";
+
 
 export default function ClassificationScreen() {
-    const [facing, setFacing] = useState<CameraType>('back');
-    const [permission, requestPermission] = useCameraPermissions();
+
+    /*const [facing, setFacing] = useState<CameraType>('back');*/
     const [isTfReady, setIsTfReady] = useState(false);
-    const [classification, setClassification] = useState(null);
+    const [classification, setClassification] = useState<string  | null>(null);
     const [model, setModel] = useState<TensorflowModel | null>(null);
-    const cameraRef = useRef<CameraView | null>(null);
+    const cameraRef = useRef<Camera | null>(null);
+    const [capturedImageUri, setCapturedImageUri] = useState<string | null>(null); // To hold the image URI
+    const { resize } = useResizePlugin()
+
+
+
+
+    const { hasPermission, requestPermission } = useCameraPermission()
+    const device = useCameraDevice('back')
+
+
+
+    const frameProcessor = useFrameProcessor((frame) => {
+        'worklet'
+      /*  console.log(`Frame: ${frame.width}x${frame.height} (${frame.pixelFormat})`)*/
+        if (model == null) return
+
+        'worklet'
+        runAtTargetFps(1, () => {
+            console.log("I'm running synchronously at 1 FPS!")
+  /*          const brightness = detectBrightness(frame)*/
+
+            // 1. Resize Frame using vision-camera-resize-plugin
+
+            const resized = resize(frame, {
+                scale: {
+                    width: 224,
+                    height: 224,
+                },
+                pixelFormat: 'rgb',
+                dataType: 'uint8',
+            })
+
+            // 2. Run model with given input buffer synchronously
+            const outputs = model.runSync([resized])
+           /* console.log("model output:", outputs)*/
+
+
+           /* setClassification(()=>"random")*/
+            /*'worklet';
+            runClassification()*/
+
+
+
+
+        })
+    }, [model])
+
+
+    'worklet'
+    const runClassification = (()=>{
+        'worklet'
+         setClassification(()=>"random")
+    })
+
 
     // Ensure TensorFlow is ready before classifying
     useEffect(() => {
@@ -32,15 +91,13 @@ export default function ClassificationScreen() {
     const loadModel = async () => {
         // Load the TFLite model from the app bundle
      /*   const tfliteModel = await loadTensorflowModel(require("../../../assets/model/tflite/ASL.tflite"))*/
-        const tfliteModel = await loadTensorflowModel(require("../../../assets/model/tflite/plant-disease.tflite"))
+        const tfliteModel = await loadTensorflowModel(require("../../../assets/model/tflite/plant-disease/plant-disease.tflite"))
         setModel(tfliteModel);
     };
 
-    if (!permission) {
-        return <YStack />;
-    }
 
-    if (!permission.granted) {
+
+    if (!hasPermission) {
         return (
             <YStack>
                 <SizableText>We need your permission to show the camera</SizableText>
@@ -49,9 +106,17 @@ export default function ClassificationScreen() {
         );
     }
 
-    function toggleCameraFacing() {
-        setFacing(current => (current === 'back' ? 'front' : 'back'));
+    if (!device) {
+        return (
+            <YStack>
+                <SizableText>No camera device</SizableText>
+            </YStack>
+        );
     }
+
+    /*function toggleCameraFacing() {
+        setFacing(current => (current === 'back' ? 'front' : 'back'));
+    }*/
 
 
     const captureAndClassify = async () => {
@@ -59,22 +124,34 @@ export default function ClassificationScreen() {
         console.log("Wil Capture Image");
 
         // Capture the image from the camera
-        const photo = await cameraRef.current.takePictureAsync();
+        const photo = await cameraRef.current.takePhoto();
 
         if (!photo) {
             throw new Error("Photo is undefined.");
         }
+        setCapturedImageUri("file://" + photo.path); // Set the image URI to show on screen
 
-        const manipulatedImage = await ImageManipulator.manipulateAsync(photo.uri, [{ resize: { width: 224, height: 224 } }], { base64: true });
+
+        // Hide the image preview after 5 seconds
+        setTimeout(() => setCapturedImageUri(null), 5000);
+
+
+        const manipulatedImage = await ImageManipulator.manipulateAsync("file://"  +  photo.path, [{ resize: { width: 224, height: 224 } }], {format:SaveFormat.JPEG , base64:true});
         console.log("Image Captured");
 
         if (!manipulatedImage.base64) {
             throw new Error("Base64 data is undefined.");
         }
 
+        setCapturedImageUri("file://" + manipulatedImage.uri); // Set the image URI to show on screen
 
-        const imageTensor = decodeJpeg(Buffer.from(manipulatedImage.base64,"base64" ));
-        console.log(imageTensor.toString());
+        /*const imageTensor = decodeJpeg(Buffer.from(manipulatedImage.base64,"base64" ));*/
+        const imageTensor = base64ToUint8Array(manipulatedImage.base64);
+
+
+        const imageRgb = await uint8arrayToRgb("file://" + manipulatedImage.uri)
+
+
         console.log("Image Converted into Tensor");
 
 
@@ -87,13 +164,28 @@ export default function ClassificationScreen() {
         console.log("Starting Classification");
 
 
-        const typedArrayArray = await convertImageToTypedArrayArray(manipulatedImage.uri);
-
-        const prediction = await model.run(typedArrayArray)
+        const prediction = model.runSync([imageRgb])
         console.log(prediction)
 
         console.log("Image Classified")
     };
+
+
+    async function uint8arrayToRgb(image){
+        const convertedArray = await convertToRGB(image);
+        let red: number[] = [];
+        let green: number[] = [];
+        let blue: number[] = [];
+        for (let index = 0; index < convertedArray.length; index += 3) {
+            red.push(convertedArray[index] / 255);
+            green.push(convertedArray[index + 1] / 255);
+            blue.push(convertedArray[index + 2] / 255);
+        }
+        const finalArray = [...red, ...green, ...blue];
+
+        return new Uint8Array(finalArray);
+    }
+
 
     function base64ToUint8Array(base64) {
         const binaryString = atob(base64); // Decode base64 string to binary
@@ -105,45 +197,31 @@ export default function ClassificationScreen() {
         return bytes;
     }
 
-    // Main function to convert image to TypedArray[]
-    async function convertImageToTypedArrayArray(imageUri) {
-        // Resize the image and get it in base64 format
-        const manipulatedImage = await ImageManipulator.manipulateAsync(
-            imageUri,
-            [{ resize: { width: 224, height: 224 } }],
-            { base64: true }
-        );
-
-        // Convert the base64 image to a Uint8Array
-        const uint8ArrayData = base64ToUint8Array(manipulatedImage.base64);
-
-        // Initialize TypedArray arrays for R, G, B channels
-        const width = 224;
-        const height = 224;
-        const redChannel = new Uint8Array(width * height);
-        const greenChannel = new Uint8Array(width * height);
-        const blueChannel = new Uint8Array(width * height);
-
-        // Populate the channels from uint8ArrayData
-        for (let i = 0; i < width * height; i++) {
-            redChannel[i] = uint8ArrayData[i * 4];     // R
-            greenChannel[i] = uint8ArrayData[i * 4 + 1]; // G
-            blueChannel[i] = uint8ArrayData[i * 4 + 2]; // B
-        }
-
-        // Return as an array of TypedArrays
-        return [redChannel, greenChannel, blueChannel];
-    }
 
     return (
         <YStack flex={1}>
-            <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
+            {/*<CameraView style={styles.camera} facing={facing} ref={cameraRef}>
                 <YStack>
                     <Button onPress={toggleCameraFacing}>
                         <SizableText>Flip Camera</SizableText>
                     </Button>
                 </YStack>
-            </CameraView>
+            </CameraView>*/}
+
+            <Camera
+                style={StyleSheet.absoluteFill}
+                device={device}
+                isActive={true}
+                ref={cameraRef}
+                photo={true}
+                frameProcessor={frameProcessor}
+            />
+            {/* Image Preview */}
+            {capturedImageUri && (
+                <YStack style={styles.previewContainer}>
+                    <Image source={{ uri: capturedImageUri }} style={styles.imagePreview} />
+                </YStack>
+            )}
 
             <YStack style={styles.buttonContainer}>
                 <Button onPress={captureAndClassify} disabled={!isTfReady}>
@@ -189,4 +267,16 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'white',
     },
+    previewContainer: {
+        position: 'absolute',
+        top: 40,
+        left: 20,
+        borderRadius: 10,
+        padding: 5,
+    },
+    imagePreview: {
+        width: 100,
+        height: 100,
+        borderRadius: 5,
+    }
 });

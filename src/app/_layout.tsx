@@ -9,6 +9,7 @@ import { Provider } from './Provider'
 import '@azure/core-asynciterator-polyfill';
 import { PowerSyncProvider } from 'src/powersync/PowerSyncProvider'
 import { system } from 'src/powersync/System'
+import 'react-native-reanimated'
 
 export {
   // Catch any errors thrown by the Layout component.

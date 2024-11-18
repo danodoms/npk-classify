@@ -10921,6 +10921,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-image-to-rgb@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "react-native-image-to-rgb@npm:0.1.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 12dc5d190824071d84a3d80c0f469e6dac982a437f8cfb6fbc6464c2106103bf75df2784117a40ff1a031c93bc72407bc738cb3be110a502933c2adf6a28d6e4
+  languageName: node
+  linkType: hard
+
 "react-native-polyfill-globals@npm:^3.1.0":
   version: 3.1.0
   resolution: "react-native-polyfill-globals@npm:3.1.0"
@@ -10991,6 +11001,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-vision-camera@npm:^4.6.1":
+  version: 4.6.1
+  resolution: "react-native-vision-camera@npm:4.6.1"
+  peerDependencies:
+    "@shopify/react-native-skia": "*"
+    react: "*"
+    react-native: "*"
+    react-native-reanimated: "*"
+    react-native-worklets-core: "*"
+  peerDependenciesMeta:
+    "@shopify/react-native-skia":
+      optional: true
+    react-native-reanimated:
+      optional: true
+    react-native-worklets-core:
+      optional: true
+  checksum: 742f11a74ca9e3eb3a41c65ba8ac588925b539d6e232f6a2c9c60b2ebcf07997d9a1bca0ef3ac471bf2b6d7eb99a81985a352a73755f8f0ee4aba1898c3b10d1
+  languageName: node
+  linkType: hard
+
 "react-native-web-internals@npm:1.108.3":
   version: 1.108.3
   resolution: "react-native-web-internals@npm:1.108.3"
@@ -11037,6 +11067,18 @@ __metadata:
     react: ^18.0.0
     react-dom: ^18.0.0
   checksum: 6c326cc2fa07abcabfffcb99ea6df921c405402ead895ee4a142e8fdf55deda504fc4ce392bf50de9e6fe141a446ec2a93d8b872fcf079f10b92799fa9021732
+  languageName: node
+  linkType: hard
+
+"react-native-worklets-core@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "react-native-worklets-core@npm:1.5.0"
+  dependencies:
+    string-hash-64: "npm:^1.0.3"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 92d4cd62e9f5ca0391873b913864fd82b3df2b5dbfaefcba4175363f8bc10a63f4c4a359c03a8d36a8b7b2096c045215dc5d5cbdb5ca3d71e843fbf140160ee9
   languageName: node
   linkType: hard
 
@@ -11491,14 +11533,18 @@ __metadata:
     react-native: "npm:^0.74.5"
     react-native-fast-tflite: "npm:1.3.0"
     react-native-fs: "npm:^2.20.0"
+    react-native-image-to-rgb: "npm:^0.1.0"
     react-native-polyfill-globals: "npm:^3.1.0"
     react-native-reanimated: "npm:~3.10.1"
     react-native-safe-area-context: "npm:^4.10.5"
     react-native-screens: "npm:~3.31.1"
     react-native-svg: "npm:15.2.0"
+    react-native-vision-camera: "npm:^4.6.1"
     react-native-web: "npm:^0.19.12"
+    react-native-worklets-core: "npm:^1.5.0"
     tamagui: "npm:^1.101.0"
     typescript: "npm:~5.3.3"
+    vision-camera-resize-plugin: "npm:^3.1.0"
   languageName: unknown
   linkType: soft
 
@@ -12092,6 +12138,13 @@ __metadata:
   version: 2.0.0
   resolution: "strict-uri-encode@npm:2.0.0"
   checksum: eaac4cf978b6fbd480f1092cab8b233c9b949bcabfc9b598dd79a758f7243c28765ef7639c876fa72940dac687181b35486ea01ff7df3e65ce3848c64822c581
+  languageName: node
+  linkType: hard
+
+"string-hash-64@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "string-hash-64@npm:1.0.3"
+  checksum: 39aab30e05dfe2effe9a0807a4987cedb6c04f4dfcda3c4915add5b90d68676a6c583d2ad51683932ac3546a4f64a5e99136521b8f2eb1956d581bd2947a96a9
   languageName: node
   linkType: hard
 
@@ -13045,6 +13098,18 @@ __metadata:
   version: 1.1.2
   resolution: "vary@npm:1.1.2"
   checksum: 31389debef15a480849b8331b220782230b9815a8e0dbb7b9a8369559aed2e9a7800cd904d4371ea74f4c3527db456dc8e7ac5befce5f0d289014dbdf47b2242
+  languageName: node
+  linkType: hard
+
+"vision-camera-resize-plugin@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "vision-camera-resize-plugin@npm:3.1.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-vision-camera: ">=4.0.1"
+    react-native-worklets-core: ">=1.2.0"
+  checksum: 68c64d0c133f76ff7332606b6ee9c78e0db99b0f095228293172beeee8206045c50c24e8e28e67f702138942d97d43690c2ce784561d1eb0d02a5a50fedba7b1
   languageName: node
   linkType: hard
 

@@ -3,6 +3,7 @@
  * @type {import('expo/metro-config').MetroConfig}
  */
 const { getDefaultConfig } = require("expo/metro-config");
+/*const { wrapWithReanimatedMetroConfig } = require("react-native-reanimated/metro-config");*/
 
 const config = getDefaultConfig(__dirname, {
   // [Web-only]: Enables CSS support in Metro.
@@ -19,11 +20,8 @@ module.exports = withTamagui(config, {
 
 config.resolver.sourceExts.push("mjs");
 
-// Add '.bin' support for assets
+// Add '.bin' and '.tflite' support for assets
 config.resolver.assetExts.push("bin", "tflite");
-
-// Add '.tflite' support for assets
-//config.resolver.assetExts.push(".tflite");
 
 module.exports = config;
 
