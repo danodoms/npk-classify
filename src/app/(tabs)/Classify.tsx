@@ -120,54 +120,35 @@ export default function ClassificationScreen() {
 
 
     const captureAndClassify = async () => {
+        if (!model) return console.log("Model is not loaded yet.");
         if (!cameraRef.current) return console.log("no camera ref");
-        console.log("Wil Capture Image");
 
         // Capture the image from the camera
         const photo = await cameraRef.current.takePhoto();
 
         if (!photo) {
-            throw new Error("Photo is undefined.");
+            throw new Error("Photo is undefined, no image captured");
         }
-        setCapturedImageUri("file://" + photo.path); // Set the image URI to show on screen
-
-
-        // Hide the image preview after 5 seconds
-        setTimeout(() => setCapturedImageUri(null), 5000);
-
-
-        const manipulatedImage = await ImageManipulator.manipulateAsync("file://"  +  photo.path, [{ resize: { width: 224, height: 224 } }], {format:SaveFormat.JPEG , base64:true});
         console.log("Image Captured");
 
-        if (!manipulatedImage.base64) {
-            throw new Error("Base64 data is undefined.");
-        }
 
-        setCapturedImageUri("file://" + manipulatedImage.uri); // Set the image URI to show on screen
+        // Sets the captured image preview to flash on screen
+        setCapturedImageUri("file://" + photo.path); // Set the image URI to show on screen
+        setTimeout(() => setCapturedImageUri(null), 5000); // Hide the image preview after 5 seconds
 
-        /*const imageTensor = decodeJpeg(Buffer.from(manipulatedImage.base64,"base64" ));*/
-        const imageTensor = base64ToUint8Array(manipulatedImage.base64);
+        // Resize the image to fit the model requirements ex. 224 x 224 in 3 channels
+        const manipulatedImage = await ImageManipulator.manipulateAsync("file://"  +  photo.path, [{ resize: { width: 224, height: 224 } }], {format:SaveFormat.JPEG , base64:true});
+        console.log("Image Resized")
 
-
+        // Convert manipulated image into rgb to fit the model and run classification
         const imageRgb = await uint8arrayToRgb("file://" + manipulatedImage.uri)
-
-
-        console.log("Image Converted into Tensor");
-
-
-        if (!model) {
-            console.log("Model is not loaded yet.");
-            return;
-        }
 
         // Perform classification with the loaded TFLite model
         console.log("Starting Classification");
-
-
         const prediction = model.runSync([imageRgb])
         console.log(prediction)
 
-        console.log("Image Classified")
+        console.log("Done, Image Classified")
     };
 
 
