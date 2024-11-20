@@ -15,7 +15,9 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "jsEngine": "hermes",
     "ios": {
+      "jsEngine": "jsc",
       "supportsTablet": true,
       "infoPlist": {
         "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your Camera.",
@@ -24,6 +26,7 @@
       "bundleIdentifier": "com.danodoms.npkclassify"
     },
     "android": {
+      "jsEngine": "jsc",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"

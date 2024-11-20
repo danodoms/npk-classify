@@ -33,37 +33,31 @@ export default function ClassificationScreen() {
 
 
 
-    function softmax(values) {
-        const maxVal = Math.max(...Object.values(values)); // Avoid numerical underflow
-        const expValues = Object.fromEntries(
-            Object.entries(values).map(([key, value]) => [key, Math.exp(value - maxVal)])
-        );
-        const sumExpValues = Object.values(expValues).reduce((sum, value) => sum + value, 0);
-        return Object.fromEntries(
-            Object.entries(expValues).map(([key, value]) => [key, value / sumExpValues])
-        );
-    }
+    const runClassification = Worklets.createRunOnJS((outputs:{}) => {
+        const result = getMaxClassification(outputs, plantDiseaseClasses)
 
+        // Update classification state
+        setClassification(`${result.className} (Score: ${result.maxValue.toFixed(6)})`); // Optionally include the score
+    })
 
-    const runClassification = Worklets.createRunOnJS((outputs:{}, applyNormalization=false) => {
-        console.log(outputs);
-
+    const getMaxClassification = (outputs, outputClasses:object) => {
+        // Find the key of the highest value
         const maxKey = Object.keys(outputs).reduce((a, b) =>
-          outputs[a] > outputs[b] ? a : b
+            outputs[a] > outputs[b] ? a : b
         );
 
         // Get the highest value
         const maxValue = outputs[maxKey];
 
-        console.log("Max Key:", maxKey);
-        console.log("Max Value:", maxValue);
-
         // Get the disease name using the key
-        const diseaseName = plantDiseaseClasses[maxKey];
+        const className = outputClasses[maxKey];
 
-        // Update classification state
-        setClassification(`${diseaseName} (Score: ${maxValue.toFixed(6)})`); // Optionally include the score
-    })
+        return {
+            className,
+            maxValue
+        };
+    };
+
 
 
     const frameProcessor = useFrameProcessor((frame) => {
@@ -72,8 +66,8 @@ export default function ClassificationScreen() {
         if (model == null) return console.log("no model loaded")
 
         'worklet'
-        runAtTargetFps(2, () => {
-            console.log("I'm running synchronously at 1 FPS!")
+        runAtTargetFps(1, () => {
+           /* console.log("I'm running synchronously at 1 FPS!")*/
   /*          const brightness = detectBrightness(frame)*/
 
             // 1. Resize Frame using vision-camera-resize-plugin
@@ -90,7 +84,7 @@ export default function ClassificationScreen() {
 
             // 2. Run model with given input buffer synchronously
             const outputs = model.runSync([resized])
-           /* console.log([resized.toString()])*/
+            /*console.log([resized])*/
 
 
             runClassification(outputs[0])
@@ -157,31 +151,38 @@ export default function ClassificationScreen() {
         console.log("Image Captured");
 
 
-        // Sets the captured image preview to flash on screen
-        setCapturedImageUri("file://" + photo.path); // Set the image URI to show on screen
-        setTimeout(() => setCapturedImageUri(null), 5000); // Hide the image preview after 5 seconds
-
         // Resize the image to fit the model requirements ex. 224 x 224 in 3 channels
         const manipulatedImage = await ImageManipulator.manipulateAsync("file://"  +  photo.path, [{ resize: { width: 224, height: 224 } }], {format:SaveFormat.JPEG , base64:true});
         console.log("Image Resized")
 
-        // Convert manipulated image into rgb to fit the model and run classification
-        const imageRgb = await uint8arrayToRgb("file://" + manipulatedImage.uri)
+        // Sets the captured image preview to flash on screen
+        setCapturedImageUri("file://" + manipulatedImage.uri); // Set the image URI to show on screen
+        setTimeout(() => setCapturedImageUri(null), 5000); // Hide the image preview after 5 seconds
+
+        //convert image into correct format
+        const imageTensor = await imageToRgb(manipulatedImage.uri, 'float32')
+
 
         // Perform classification with the loaded TFLite model
         console.log("Starting Classification");
-        const prediction = model.runSync([imageRgb])
+        const prediction = await model.run([imageTensor])
         console.log(prediction)
 
         console.log("Done, Image Classified")
     };
 
 
-    async function uint8arrayToRgb(image){
+
+    type imageFormat = 'uint8' | 'float32'
+    const imageToRgb = async (image,format:imageFormat='uint8') => {
         const convertedArray = await convertToRGB(image);
-        let red: number[] = [];
-        let green: number[] = [];
-        let blue: number[] = [];
+        console.log("convertedArray:", convertedArray);
+
+        let red:number[] = []
+        let blue:number[] = []
+        let green:number[] = []
+
+        // This normalizes the RGB values by dividing 255
         for (let index = 0; index < convertedArray.length; index += 3) {
             red.push(convertedArray[index] / 255);
             green.push(convertedArray[index + 1] / 255);
@@ -189,33 +190,34 @@ export default function ClassificationScreen() {
         }
         const finalArray = [...red, ...green, ...blue];
 
-        return new Uint8Array(finalArray);
-    }
 
+        console.log('normalized array: ', finalArray);
 
-    function base64ToUint8Array(base64) {
-        const binaryString = atob(base64); // Decode base64 string to binary
-        const len = binaryString.length;
-        const bytes = new Uint8Array(len);
-        for (let i = 0; i < len; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
+        //convert to array buffer (some models require uint8 or float32 format)
+        if (format === 'float32') {
+            return new Float32Array(finalArray);
+        } else if (format === 'uint8') {
+            return new Uint8Array(finalArray);
+        } else {
+            throw new Error("Invalid format specified. Use 'float32' or 'uint8'.");
         }
-        return bytes;
-    }
+    };
+
+
+
 
 
     return (
-        <YStack flex={1}>
-
-
+        <YStack flex={1} alignContent="flex-start">
             <Camera
                 style={StyleSheet.absoluteFill}
                 device={device}
                 isActive={true}
                 ref={cameraRef}
                 photo={true}
-                frameProcessor={frameProcessor}
+              /*  frameProcessor={frameProcessor}*/
             />
+
             {/* Image Preview */}
             {capturedImageUri && (
                 <YStack style={styles.previewContainer}>
@@ -223,25 +225,14 @@ export default function ClassificationScreen() {
                 </YStack>
             )}
 
-
             {/* Display Classification Result */}
             {classification && (
-                <H2 size="$large" fontWeight="bold">
-                    {classification}
-                </H2>
-            )}
-            {classification && (
-                <H2 size="$large" fontWeight="bold">
-                    {classification}
-                </H2>
-            )}
-            {classification && (
-                <H2 size="$large" fontWeight="bold">
+                <H2 fontWeight="bold">
                     {classification}
                 </H2>
             )}
 
-            <YStack style={styles.buttonContainer}>
+            <YStack >
                 <Button onPress={captureAndClassify} disabled={!isTfReady}>
                     {isTfReady ? <SizableText>Capture and Classify</SizableText> : <SizableText>Waiting for Tensorflow...</SizableText>}
                 </Button>
