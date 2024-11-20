@@ -160,7 +160,7 @@ export default function ClassificationScreen() {
         setTimeout(() => setCapturedImageUri(null), 5000); // Hide the image preview after 5 seconds
 
         //convert image into correct format
-        const imageTensor = await imageToRgb(manipulatedImage.uri, 'float32')
+        const imageTensor = await convertImageToRgb(manipulatedImage.uri, 'float32')
 
 
         // Perform classification with the loaded TFLite model
@@ -168,13 +168,16 @@ export default function ClassificationScreen() {
         const prediction = await model.run([imageTensor])
         console.log(prediction)
 
+        await runClassification(prediction[0])
+
+
         console.log("Done, Image Classified")
     };
 
 
 
     type imageFormat = 'uint8' | 'float32'
-    const imageToRgb = async (image,format:imageFormat='uint8') => {
+    const convertImageToRgb = async (image,format:imageFormat='uint8') => {
         const convertedArray = await convertToRGB(image);
         console.log("convertedArray:", convertedArray);
 
