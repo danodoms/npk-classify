@@ -193,7 +193,6 @@ export default function ClassificationScreen() {
         }
         const finalArray = [...red, ...green, ...blue];
 
-
         console.log('normalized array: ', finalArray);
 
         //convert to array buffer (some models require uint8 or float32 format)
